@@ -1,0 +1,11 @@
+# Ollama Python client
+ollama==0.5.3
+
+# Qdrant client
+qdrant-client==1.15.1
+
+# Optional utility for embeddings (Ollama wrapper)
+chromadb==1.0.17
+
+# Standard dependencies
+tqdm==4.66.1
