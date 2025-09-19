@@ -2,6 +2,18 @@
 
 This repository provides a Docker Compose setup for the AI-Ollama ecosystem, including services for Ollama, OpenWebUI, Qdrant, and a RAG API.
 
+The goal of this project is to create a completely off-the-grid environment for running and managing AI models, with a focus on RAG (Retrieval-Augmented Generation) capabilities using Ollama.
+
+This stack can be used for various offline applications within our organization, such as:
+
+- MOV.AI platform support
+- Internal knowledge bases
+- Training and documentation search
+- Software development assistance
+- Custom AI applications leveraging local models
+
+**Note**: Think of it as a self-hosted alternative to services like ChatGPT, but with an extended knowledge of our code and documentation.
+
 ## Services
 
 - **Traefik**: A reverse proxy and load balancer for managing access to the other services.
@@ -92,6 +104,8 @@ curl http://ollama.localhost/api/generate -d '{"model": "llama3:8b-instruct-q4_0
 
 RAG stands for Retrieval-Augmented Generation. It allows you to query documents and generate responses based on the retrieved information.
 
+See documentation for the RAG API [here](https://docs.openwebui.com/features/rag).
+
 > **Note**: Ollama doesn’t let you fine-tune in the traditional sense — it’s more about prompt engineering and embedding your knowledge into an external retrieval pipeline.
 
 For example, if we need to inject code into the AI model, we need to use the following approach:
@@ -181,9 +195,13 @@ docker exec -it ollama ollama pull qwen2.5
 
 2. Index the code
 
+We need to create a Python virtual environment, install the required dependencies, and run the indexing script. Make sure to replace `~/work/Training_docs` with the path to your local directory containing the documents you want to index.
+
+The RAG API script will use the `nomic-embed-text` model for generating embeddings and `qwen2.5` for answering questions, taking into account only .py, .yaml/.yml, .json and .md files.
+
 ```bash
 python3 -m venv venv
 source venv/bin/activate
 pip install -r rag_api/requirements.txt
-python rag_api/release_metadata_rag.py --index --base /home/afe/Desktop/Release_Notes_2.4
+python rag_api/release_metadata_rag.py --index --base ~/work/Training_docs
 ```
