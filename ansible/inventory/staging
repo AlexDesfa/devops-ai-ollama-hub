@@ -1,0 +1,5 @@
+[staging]
+staging.example.com ansible_user=ubuntu
+
+[staging:vars]
+env=staging

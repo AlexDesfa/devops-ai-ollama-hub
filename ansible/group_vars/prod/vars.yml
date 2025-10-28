@@ -1,0 +1,69 @@
+---
+# Production environment specific variables
+env: production
+domain_suffix: example.com
+
+# Resource configuration for production
+memory_limits:
+  ollama: "14g"
+  openwebui: "500m"
+  qdrant: "2g"
+  rag_api: "500m"
+  grafana: "500m"
+
+# Production specific settings
+debug_mode: false
+logging_level: INFO
+
+# Grafana production settings
+grafana_admin_password: "{{ vault_grafana_prod_password }}"  # Stored in vault
+
+# Production specific feature flags
+features:
+  enable_debug_endpoints: false
+  enable_performance_monitoring: true
+  enable_extended_logging: false
+
+# Monitoring configuration
+monitoring:
+  scrape_interval: 60s
+  evaluation_interval: 60s
+  retention_period: "30d"
+  alert_rules:
+    memory_threshold: 80
+    cpu_threshold: 75
+    error_rate_threshold: 1
+  alerts:
+    slack_channel: "#prod-alerts"
+    pagerduty_integration: true
+
+# Health check configuration
+health_check:
+  interval: "30s"
+  timeout: "10s"
+  retries: 3
+
+# Security settings
+security:
+  enable_audit_logging: true
+  ssl_enabled: true
+  allowed_origins: []  # Strict CORS policy
+  rate_limiting:
+    enabled: true
+    requests_per_second: 100
+
+# Backup configuration
+backup:
+  enabled: true
+  interval: "hourly"
+  retention_days: 30
+  type: "full"
+  encryption: true
+
+# High Availability settings
+ha:
+  enabled: true
+  replicas:
+    rag_api: 2
+    openwebui: 2
+  load_balancer: true

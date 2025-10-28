@@ -1,0 +1,37 @@
+---
+# Development environment specific variables
+env: development
+domain_suffix: dev.example.com
+
+# Resource overrides for development
+memory_limits:
+  ollama: "14g"
+  openwebui: "1g"  # Increased for development
+  qdrant: "3g"     # Increased for development
+  rag_api: "1g"    # Increased for development
+  grafana: "500m"
+
+# Development specific settings
+debug_mode: true
+logging_level: DEBUG
+
+# Grafana development settings
+grafana_admin_password: "dev-admin-password"  # Change in production
+
+# Development specific feature flags
+features:
+  enable_debug_endpoints: true
+  enable_performance_monitoring: true
+  enable_extended_logging: true
+
+# Monitoring configuration
+monitoring:
+  scrape_interval: 10s
+  evaluation_interval: 10s
+  retention_period: "7d"
+
+# Health check configuration
+health_check:
+  interval: "15s"
+  timeout: "5s"
+  retries: 5

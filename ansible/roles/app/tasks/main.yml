@@ -1,0 +1,69 @@
+---
+- name: Create data directories
+  file:
+    path: "{{ app_dir }}/{{ item }}"
+    state: directory
+    mode: '0755'
+    owner: ubuntu
+    group: ubuntu
+  loop:
+    - "data/ollama"
+    - "data/openwebui"
+    - "data/qdrant"
+    - "data/grafana"
+
+- name: Clone repository
+  git:
+    repo: "{{ repo_url }}"
+    dest: "{{ app_dir }}"
+    version: "{{ git_branch | default('main') }}"
+    accept_hostkey: yes
+  register: git_clone
+
+- name: Copy environment configuration
+  template:
+    src: env.j2
+    dest: "{{ app_dir }}/.env"
+    owner: ubuntu
+    group: ubuntu
+    mode: '0600'
+
+- name: Pull Docker images
+  docker_compose:
+    project_src: "{{ app_dir }}"
+    files:
+      - docker-compose.yml
+    pull: yes
+  register: output
+
+- name: Deploy services
+  docker_compose:
+    project_src: "{{ app_dir }}"
+    files:
+      - docker-compose.yml
+    state: present
+  register: output
+
+- name: Wait for services to be healthy
+  uri:
+    url: "http://{{ item.host }}/health"
+    return_content: yes
+  register: health_check
+  until: health_check.status == 200
+  retries: 12
+  delay: 5
+  loop:
+    - { host: "webui.{{ domain_suffix }}" }
+    - { host: "ragapi.{{ domain_suffix }}" }
+    - { host: "qdrant.{{ domain_suffix }}" }
+  ignore_errors: yes
+
+- name: Check Grafana status
+  uri:
+    url: "http://grafana.{{ domain_suffix }}:3000/api/health"
+    return_content: yes
+  register: grafana_health
+  until: grafana_health.status == 200
+  retries: 12
+  delay: 5
+  ignore_errors: yes

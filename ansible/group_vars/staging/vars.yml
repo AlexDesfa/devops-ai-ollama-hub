@@ -1,0 +1,47 @@
+---
+# Staging environment specific variables
+env: staging
+domain_suffix: staging.example.com
+
+# Resource configuration for staging
+memory_limits:
+  ollama: "14g"
+  openwebui: "750m"  # More constrained than dev
+  qdrant: "2g"
+  rag_api: "750m"
+  grafana: "500m"
+
+# Staging specific settings
+debug_mode: false
+logging_level: INFO
+
+# Grafana staging settings
+grafana_admin_password: "staging-admin-password"  # Change in production
+
+# Staging specific feature flags
+features:
+  enable_debug_endpoints: false
+  enable_performance_monitoring: true
+  enable_extended_logging: true
+
+# Monitoring configuration
+monitoring:
+  scrape_interval: 30s
+  evaluation_interval: 30s
+  retention_period: "15d"
+  alert_rules:
+    memory_threshold: 85
+    cpu_threshold: 80
+    error_rate_threshold: 5
+
+# Health check configuration
+health_check:
+  interval: "20s"
+  timeout: "10s"
+  retries: 3
+
+# Backup configuration
+backup:
+  enabled: true
+  interval: "daily"
+  retention_days: 7

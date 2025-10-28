@@ -1,0 +1,5 @@
+[dev]
+dev.example.com ansible_user=ubuntu
+
+[dev:vars]
+env=development

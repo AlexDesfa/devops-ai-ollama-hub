@@ -1,0 +1,28 @@
+---
+# Grafana admin passwords
+vault_grafana_dev_password: "dev-secure-password-change-me"
+vault_grafana_staging_password: "staging-secure-password-change-me"
+vault_grafana_prod_password: "prod-secure-password-change-me"
+
+# Docker registry credentials
+vault_docker_registry_username: "registry-user"
+vault_docker_registry_password: "registry-password"
+
+# SSH Keys
+vault_ssh_private_key: |
+  -----BEGIN OPENSSH PRIVATE KEY-----
+  Your SSH private key here
+  -----END OPENSSH PRIVATE KEY-----
+
+# Monitoring credentials
+vault_prometheus_admin_password: "prometheus-password"
+vault_alertmanager_webhook_url: "https://hooks.slack.com/services/your-webhook-url"
+
+# PagerDuty integration
+vault_pagerduty_service_key: "your-pagerduty-service-key"
+
+# Database credentials
+vault_qdrant_admin_password: "qdrant-secure-password"
+
+# Note: This file should be encrypted using ansible-vault before committing
+# Run: ansible-vault encrypt group_vars/all/vault.yml

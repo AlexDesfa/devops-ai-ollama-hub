@@ -1,0 +1,27 @@
+---
+# Common variables for all environments
+repo_url: "git@github.com:AlexDesfa/devops-ai-ollama-hub.git"
+app_dir: "/opt/ollama-hub"
+docker_compose_version: "2.20.0"
+
+# Docker configuration
+docker_registry: "docker.io"
+
+# Base service configuration
+health_check_interval: "30s"
+health_check_timeout: "10s"
+health_check_retries: 3
+
+# Resource defaults
+default_memory_limits:
+  ollama: "14g"
+  openwebui: "500m"
+  qdrant: "2g"
+  rag_api: "500m"
+  grafana: "500m"
+
+# Monitoring configuration
+prometheus_retention_days: 15
+grafana_plugins:
+  - grafana-piechart-panel
+  - grafana-worldmap-panel

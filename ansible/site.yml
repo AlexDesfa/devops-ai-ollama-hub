@@ -1,0 +1,17 @@
+---
+- name: Provision Infrastructure
+  hosts: "{{ target_env }}"
+  become: yes
+  vars:
+    app_dir: "/opt/ollama-hub"
+    docker_compose_version: "2.20.0"
+
+  roles:
+    - role: common
+      tags: ['common']
+
+    - role: docker
+      tags: ['docker']
+
+    - role: app
+      tags: ['app']

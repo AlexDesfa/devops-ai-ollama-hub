@@ -1,0 +1,5 @@
+[prod]
+example.com ansible_user=ubuntu
+
+[prod:vars]
+env=production
