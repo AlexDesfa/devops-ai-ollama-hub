@@ -47,7 +47,7 @@ services:
 
   openwebui:
     image: ghcr.io/open-webui/open-webui:v0.6.22
-    container_name: openwebui
+    # container_name: openwebui
     restart: unless-stopped
     environment:
       - OLLAMA_API_BASE=http://ollama:11434
@@ -89,7 +89,7 @@ services:
     build:
       context: ./rag_api
       dockerfile: Dockerfile
-    container_name: rag_api
+    #container_name: rag_api
     restart: unless-stopped
     depends_on:
       - ollama
@@ -106,10 +106,29 @@ services:
       - "traefik.http.routers.ragapi.entrypoints=web"
       - "traefik.http.services.ragapi.loadbalancer.server.port=8000"
 
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    networks:
+      - internal
+    volumes:
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.grafana.rule=Host(`grafana.localhost`)"
+      - "traefik.http.routers.grafana.entrypoints=web"
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+
 volumes:
   ollama_data:
   openwebui_data:
   qdrant_data:
+  grafana_data:
 
 networks:
   internal:

@@ -1,0 +1,68 @@
+name: Test and Build on PR
+
+on:
+  pull_request:
+    branches: [ "main", "dev" ]
+  push:
+    branches: [ "main" ]
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Cache pip dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
+      - name: Install Python dependencies for rag_api
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r rag_api/requirements.txt
+
+      - name: Lint rag_api (basic static check)
+        run: |
+          pip install flake8
+          flake8 rag_api/ --count --select=E9,F63,F7,F82 --show-source --statistics
+
+      - name: Check docker compose syntax
+        run: |
+          docker compose config -q
+
+      - name: Build Docker images (validate Dockerfiles)
+        run: |
+          docker compose build --no-cache
+
+      - name: Run rag_api tests (if any)
+        run: |
+          if [ -f rag_api/test_rag_api.py ]; then python -m unittest discover -s rag_api; else echo "No tests found"; fi
+
+      - name: Security scan with Bandit
+        run: |
+          pip install bandit
+          bandit -r rag_api/
+
+      - name: Lint Dockerfiles with Hadolint
+        uses: hadolint/hadolint-action@v3.1.0
+        with:
+          dockerfile: ./rag_api/Dockerfile
+
+      # - name: Non-regression - Check service health endpoints
+      #   run: |
+      #     docker compose up -d
+      #     sleep 20
+      #     curl --fail http://localhost:8000/ || (echo "rag_api not healthy" && exit 1)
+      #     curl --fail http://localhost:6333/ || (echo "qdrant not healthy" && exit 1)
+      #     curl --fail http://localhost:11434/ || (echo "ollama not healthy" && exit 1)
+      #     docker compose down
